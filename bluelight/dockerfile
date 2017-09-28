@@ -30,6 +30,6 @@ EXPOSE 80
 
 COPY --from=msi C:\bluelight C:\bluelight
 
-VOLUME c:\bluelight\data\
+VOLUME c:\bluelight\data
 
 CMD [ "cmd.exe" , "c:\bluelight\run.cmd" ]

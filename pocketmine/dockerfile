@@ -17,6 +17,10 @@ RUN Invoke-WebRequest 'https://ci.appveyor.com/api/buildjobs/80dp14k90koyq1d9/ar
 RUN Invoke-WebRequest 'https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA8/PocketMine-MP_1.7dev-83_6e5759b1_API-3.0.0-ALPHA8.phar' -OutFile 'pocketmine-MP.phar' -UseBasicParsing ; `
     move pocketmine-MP.phar  C:\pocketmine\pocketmine-MP.phar ; 
 
+RUN Invoke-WebRequest 'http://windows.php.net/downloads/qa/php-7.2.0RC3-nts-Win32-VC15-x64.zip' -OutFile 'php.zip' -UseBasicParsing ; `
+    mkdir c:\php ; `
+    Expand-Archive php.zip -DestinationPath C:\php; 
+
 RUN del c:\v*_vc_redist.x64 -force ; `
     del php72.zip ;
 # CMD [ "powershell.exe" ]
@@ -25,9 +29,14 @@ RUN del c:\v*_vc_redist.x64 -force ; `
 
 # SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
+COPY assets assets
+
+
 EXPOSE 19132
 
 EXPOSE 80
+
+VOLUME c:\data
 
 # COPY --from=msi C:\windows\system32\imm32.dll C:\windows\system32
 # COPY --from=msi C:\windows\system32\msvcr100.dll C:\windows\system32
