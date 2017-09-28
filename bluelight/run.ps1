@@ -1,1 +1,1 @@
-docker run -it  -v c:\data:c:\bluelight\data bluelight
+docker run -v c:\data\bluelight:c:\data bluelight

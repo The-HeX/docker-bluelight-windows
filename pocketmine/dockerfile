@@ -3,8 +3,6 @@ FROM microsoft/windowsservercore as msi
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-#RUN  Invoke-WebRequest 'https://go.microsoft.com/fwlink/?LinkId=746572' -OutFile 'v15_vc_redist.x64.exe' -UseBasicParsing ;  `
-# https://download.microsoft.com/download/9/3/F/93FCF1E7-E6A4-478B-96E7-D4B285925B00/vc_redist.x64.exe
 RUN     Invoke-WebRequest 'https://go.microsoft.com/fwlink/?LinkId=746572' -OutFile 'v15_vc_redist.x64.exe' -UseBasicParsing ;  `
         Start-Process c:\v15_vc_redist.x64.exe -ArgumentList '/install /passive /norestart' -Wait ; `
         Invoke-WebRequest 'https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x64.exe' -OutFile 'v10_vc_redist.x64.exe' -UseBasicParsing ; `
@@ -17,20 +15,16 @@ RUN Invoke-WebRequest 'https://ci.appveyor.com/api/buildjobs/80dp14k90koyq1d9/ar
 RUN Invoke-WebRequest 'https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA8/PocketMine-MP_1.7dev-83_6e5759b1_API-3.0.0-ALPHA8.phar' -OutFile 'pocketmine-MP.phar' -UseBasicParsing ; `
     move pocketmine-MP.phar  C:\pocketmine\pocketmine-MP.phar ; 
 
-RUN Invoke-WebRequest 'http://windows.php.net/downloads/qa/php-7.2.0RC3-nts-Win32-VC15-x64.zip' -OutFile 'php.zip' -UseBasicParsing ; `
-    mkdir c:\php ; `
-    Expand-Archive php.zip -DestinationPath C:\php; 
-
 RUN del c:\v*_vc_redist.x64 -force ; `
     del php72.zip ;
-# CMD [ "powershell.exe" ]
 
 # FROM microsoft/nanoserver
-
 # SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-
-COPY assets assets
-
+# COPY --from=msi C:\windows\system32\imm32.dll C:\windows\system32
+# COPY --from=msi C:\windows\system32\msvcr100.dll C:\windows\system32
+# COPY --from=msi C:\windows\system32\msvcp140.dll C:\windows\system32
+# COPY --from=msi C:\windows\system32\vcruntime140.dll C:\windows\system32
+# COPY --from=msi C:\pocketmine C:\pocketmine
 
 EXPOSE 19132
 
@@ -38,11 +32,10 @@ EXPOSE 80
 
 VOLUME c:\data
 
-# COPY --from=msi C:\windows\system32\imm32.dll C:\windows\system32
-# COPY --from=msi C:\windows\system32\msvcr100.dll C:\windows\system32
-# COPY --from=msi C:\windows\system32\msvcp140.dll C:\windows\system32
-# COPY --from=msi C:\windows\system32\vcruntime140.dll C:\windows\system32
+RUN Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\DOS Devices' -Name 'G:' -Value "\??\C:\data" -Type String;  
 
-# COPY --from=msi C:\pocketmine C:\pocketmine
+COPY assets pocketmine
 
-CMD [ "powershell.exe" ]
+WORKDIR c:\pocketmine
+
+CMD ["run.cmd"]

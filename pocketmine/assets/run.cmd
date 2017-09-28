@@ -1,0 +1,1 @@
+ bin\php\php.exe pocketmine-mp.phar --data g:\ --plugins g:\plugins

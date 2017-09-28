@@ -1,1 +1,1 @@
- bin\php\php.exe bluelight-php7.phar --data data
+ bin\php\php.exe bluelight-php7.phar --data g:\  --plugins g:\plugins

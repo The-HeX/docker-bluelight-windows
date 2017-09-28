@@ -16,20 +16,21 @@ RUN Invoke-WebRequest 'https://github.com/BlueLightJapan/BinaryPackforWindows/ar
 
 RUN Invoke-WebRequest 'http://jenkins.haniokasai.com/job/BlueLight-PMMP/ws/artifacts/BlueLight-PHP7.phar' -OutFile 'c:\bluelight\bluelight-php7.phar' -UseBasicParsing ; 
 
-COPY assets assets
-RUN copy .\Assets\*.* .\bluelight\
-FROM microsoft/nanoserver
+COPY assets bluelight
 
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+#FROM microsoft/nanoserver
+#SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+#COPY --from=msi C:\windows\system32\msvcp140.dll C:\windows\system32
+#COPY --from=msi C:\windows\system32\vcruntime140.dll C:\windows\system32
+#COPY --from=msi C:\bluelight C:\bluelight
 
-COPY --from=msi C:\windows\system32\msvcp140.dll C:\windows\system32
-COPY --from=msi C:\windows\system32\vcruntime140.dll C:\windows\system32
-  
 EXPOSE 19132
 EXPOSE 80
 
-COPY --from=msi C:\bluelight C:\bluelight
+VOLUME c:\data
 
-VOLUME c:\bluelight\data
+RUN Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\DOS Devices' -Name 'G:' -Value "\??\C:\data" -Type String;  
 
-CMD [ "cmd.exe" , "c:\bluelight\run.cmd" ]
+WORKDIR c:\bluelight 
+
+CMD ["run.cmd"]
