@@ -1,0 +1,13 @@
+# escape=`
+FROM openjdk:8-nanoserver
+LABEL version="1.2"
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+RUN $url = ('https://ci.potestas.xyz/job/Nukkit-GT1.2/lastSuccessfulBuild/artifact/target/nukkit-1.0-SNAPSHOT.jar'); `
+    Write-Host "Downloading Nukkit Jar"; `
+    New-Item -ItemType Directory -Name NukkitBin -Path C:\; `
+    Invoke-WebRequest -Uri $url -OutFile C:\NukkitBin\nukkit.jar; `
+    Write-Host "Download complete";
+EXPOSE 19132 19132
+VOLUME "C:\data"
+WORKDIR "C:\data"
+CMD "java -jar C:\NukkitBin\nukkit.jar"
